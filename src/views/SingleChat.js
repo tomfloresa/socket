@@ -6,17 +6,38 @@ import {
   StyleSheet,
   Button,
   TouchableOpacity,
-  View
+  View,
+  Alert
 } from "react-native";
 import { connect } from "react-redux";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import SocketIOClient from "socket.io-client";
+
+import { GiftedChat } from "react-native-gifted-chat";
 
 class SingleChat extends Component {
+  constructor(props) {
+    super(props);
+
+    // Creating the socket-client instance will automatically connect to the server.
+    this.socket = SocketIOClient("ws://127.0.0.1:3000");
+  }
+
+  onSend = message => {
+    console.log(message);
+    this.socket.emit("message", message[0]);
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <KeyboardAwareScrollView>
-        </KeyboardAwareScrollView>
+        <GiftedChat
+          messages={null}
+          onSend={message => this.onSend(message)}
+          user={{
+            _id: 1
+          }}
+        />
       </SafeAreaView>
     );
   }
@@ -63,11 +84,5 @@ const styles = StyleSheet.create({
     fontSize: 22
   }
 });
-
-const mapStateToProps = (state, ownProps) => {
-  const { email, password, isSignedIn } = state.session;
-
-  return { email, password, isSignedIn, buttonDisabled: true };
-};
 
 export default connect(null, null)(SingleChat);

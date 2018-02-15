@@ -1,0 +1,1 @@
+export const UPDATE_SINGLE_CHAT = "update_single_chat";
