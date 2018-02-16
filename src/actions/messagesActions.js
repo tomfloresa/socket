@@ -12,8 +12,8 @@ export const updateMessages = messages => {
 };
 
 export const concatMessage = message => {
-    return {
-        type: CONCAT_MESSAGE, 
-        payload: message
-    }
-}
+  return {
+    type: CONCAT_MESSAGE,
+    payload: message
+  };
+};

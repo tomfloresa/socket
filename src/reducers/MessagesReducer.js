@@ -7,7 +7,7 @@ export default (state = INITIAL_STATE, action) => {
     case UPDATE_MESSAGES:
       return { ...state, messages: action.payload };
     case CONCAT_MESSAGE:
-      return { ...state, messages: state.messages.concat(action.payload) };
+      return { ...state, messages: action.payload.concat(state.messages) };
     default:
       return state;
   }

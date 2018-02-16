@@ -23,6 +23,7 @@ class SingleChat extends Component {
     super(props);
 
     this.onReceivedMessage.bind(this);
+    this.updateWithNewMessage.bind(this);
 
     // Creating the socket-client instance will automatically connect to the server.
     this.socket = SocketIOClient("http://localhost:3000");
@@ -30,7 +31,9 @@ class SingleChat extends Component {
     // When the messages action is emitted from server, execute the onReceivedMessage function
     this.socket.on("messages", this.onReceivedMessage);
 
-    this.socket.emit("getMessages", null);
+    this.socket.on("message", this.updateWithNewMessage)
+
+    this.socket.emit("getMessages", null); 
   }
 
   // Send a message to server
@@ -45,13 +48,18 @@ class SingleChat extends Component {
     this.props.updateMessages(messages);
   };
 
+  updateWithNewMessage = message => {
+    this.props.concatMessage(message);
+  }
+
   render() {
     const { messages } = this.props;
 
     return (
       <SafeAreaView style={styles.container}>
         <GiftedChat
-          messages={messages.messages.reverse()}
+          messages={messages.messages}
+          keyboardAppearance={ 'dark' }
           onSend={message => this.onSend(message)}
           user={{
             _id: 1
@@ -65,38 +73,6 @@ class SingleChat extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1
-  },
-  loginHolder: {
-    marginTop: 260
-  },
-  button: {
-    backgroundColor: "#07F0C3",
-    height: 40,
-    marginLeft: 8,
-    marginRight: 8,
-    marginTop: 8,
-    marginBottom: 8,
-    borderRadius: 4,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 8
-  },
-  buttonDisabled: {
-    backgroundColor: "gray",
-    height: 40,
-    marginLeft: 8,
-    marginRight: 8,
-    marginTop: 8,
-    marginBottom: 8,
-    borderRadius: 4,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 8
-  },
-  buttonText: {
-    fontFamily: "Poppins-Bold",
-    color: "white",
-    fontSize: 22
   }
 });
 
