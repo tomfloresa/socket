@@ -16,7 +16,7 @@ import SocketIOClient from "socket.io-client";
 import { GiftedChat } from "react-native-gifted-chat";
 
 // Actions
-import { updateMessages } from "../actions";
+import { updateMessages, concatMessage } from "../actions";
 
 class SingleChat extends Component {
   constructor(props) {
@@ -26,17 +26,23 @@ class SingleChat extends Component {
 
     // Creating the socket-client instance will automatically connect to the server.
     this.socket = SocketIOClient("http://localhost:3000");
+
+    // When the messages action is emitted from server, execute the onReceivedMessage function
     this.socket.on("messages", this.onReceivedMessage);
 
     this.socket.emit("getMessages", null);
   }
 
+  // Send a message to server
   onSend = message => {
     this.socket.emit("message", message[0]);
+
+    this.props.concatMessage(message);
   };
 
+  // When messages are received from server, execute and action and update redux state
   onReceivedMessage = messages => {
-    console.log(messages);
+    this.props.updateMessages(messages);
   };
 
   render() {
@@ -45,7 +51,7 @@ class SingleChat extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <GiftedChat
-          messages={messages.messages}
+          messages={messages.messages.reverse()}
           onSend={message => this.onSend(message)}
           user={{
             _id: 1
@@ -58,11 +64,7 @@ class SingleChat extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#5B6DFE",
-    padding: 20,
-    paddingTop: 40,
-    justifyContent: "center"
+    flex: 1
   },
   loginHolder: {
     marginTop: 260
@@ -104,4 +106,6 @@ const mapStateToProps = (state, ownProps) => {
   return { messages };
 };
 
-export default connect(mapStateToProps, { updateMessages })(SingleChat);
+export default connect(mapStateToProps, { updateMessages, concatMessage })(
+  SingleChat
+);

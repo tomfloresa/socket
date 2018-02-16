@@ -24,9 +24,15 @@ websocket.on("connection", socket => {
     socket.broadcast.emit("message", message);
   });
 
-  // Emit messages
+  // Emit messages to client
   socket.on("getMessages", messages => {
-      const messagesRetrieved = db.collection("messages");
-      socket.emit("messages", messagesRetrieved);
-  })
+    db
+      .collection("messages")
+      // Find all
+      .find()
+      // Sort by creation date and emit once sorting is done
+      .sort({ createdAt: 1 }, (err, docs) => {
+        socket.emit("messages", docs);
+      });
+  });
 });
